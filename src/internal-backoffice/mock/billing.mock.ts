@@ -1,0 +1,58 @@
+import type { InvoiceWithClient, StripePayment } from '../types/billing'
+
+export const MOCK_INVOICES: InvoiceWithClient[] = [
+  {
+    id: 'INV-2026-001',
+    client_id: 'cli_92834',
+    subscription_id: 'sub_1',
+    stripe_invoice_id: 'in_1P9x2kL',
+    amount_cents: 7900,
+    currency: 'eur',
+    status: 'PAID',
+    period_start: '2026-04-01T00:00:00Z',
+    period_end: '2026-05-01T00:00:00Z',
+    paid_at: '2026-04-01T10:00:00Z',
+    due_date: '2026-04-05T00:00:00Z',
+    created_at: '2026-04-01T09:00:00Z',
+    client_name: 'Hotel Mirador del Valle',
+    plan_name: 'Pro',
+  },
+  {
+    id: 'INV-2026-002',
+    client_id: 'cli_77263',
+    subscription_id: 'sub_3',
+    stripe_invoice_id: 'in_1P9x3mZ',
+    amount_cents: 14900,
+    currency: 'eur',
+    status: 'PAID',
+    period_start: '2026-04-01T00:00:00Z',
+    period_end: '2026-05-01T00:00:00Z',
+    paid_at: '2026-04-01T10:05:00Z',
+    due_date: '2026-04-05T00:00:00Z',
+    created_at: '2026-04-01T09:00:00Z',
+    client_name: 'Luxury Villas Group',
+    plan_name: 'Premium',
+  },
+  {
+    id: 'INV-2026-003',
+    client_id: 'cli_12938',
+    subscription_id: 'sub_2',
+    stripe_invoice_id: 'in_1P9x4pQ',
+    amount_cents: 2900,
+    currency: 'eur',
+    status: 'OPEN',
+    period_start: '2026-04-01T00:00:00Z',
+    period_end: '2026-05-01T00:00:00Z',
+    paid_at: null,
+    due_date: '2026-04-10T00:00:00Z',
+    created_at: '2026-04-01T09:00:00Z',
+    client_name: 'Apartamentos Sol y Mar',
+    plan_name: 'Basic',
+  },
+]
+
+export const MOCK_PAYMENTS: StripePayment[] = [
+  { id: 'PAY-8821', date: '2026-04-01T10:00:00Z', amount_cents: 7900,  currency: 'eur', status: 'succeeded', method: 'Visa •••• 4242',       stripe_payment_intent_id: 'pi_3P9x2kL', client_id: 'cli_92834' },
+  { id: 'PAY-8822', date: '2026-04-01T10:05:00Z', amount_cents: 14900, currency: 'eur', status: 'succeeded', method: 'Mastercard •••• 8812', stripe_payment_intent_id: 'pi_3P9x3mZ', client_id: 'cli_77263' },
+  { id: 'PAY-8823', date: '2026-04-01T10:10:00Z', amount_cents: 2900,  currency: 'eur', status: 'failed',    method: 'Visa •••• 1111',       stripe_payment_intent_id: 'pi_3P9x4pQ', client_id: 'cli_12938' },
+]
