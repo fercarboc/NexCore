@@ -19,8 +19,14 @@ import {
   Cell
 } from 'recharts';
 import { MetricCard, SectionHeader, Badge } from '../components/UI';
-import { MRR_DATA, PLAN_DISTRIBUTION } from '../mock/metrics.mock';
 import { useClients } from '@/src/hooks/useClients';
+
+const PLAN_COLORS: Record<string, string> = {
+  BASIC: '#94a3b8',
+  PRO: '#6366f1',
+  PREMIUM: '#4f46e5',
+  ENTERPRISE: '#1e1b4b',
+}
 
 export const DashboardPage = () => {
   const { clients } = useClients()
@@ -32,6 +38,25 @@ export const DashboardPage = () => {
     return sum + (cycle === 'YEARLY' ? Math.round(price / 12) : price)
   }, 0)
   const mrrDisplay = mrr > 0 ? `${(mrr / 100).toLocaleString('es-ES', { maximumFractionDigits: 0 })}€` : '—'
+
+  // Distribución real por plan
+  const planCounts: Record<string, number> = {}
+  activeClients.forEach(c => {
+    const code = c.subscription?.plan?.code ?? 'SIN PLAN'
+    planCounts[code] = (planCounts[code] ?? 0) + 1
+  })
+  const total = activeClients.length || 1
+  const PLAN_DISTRIBUTION = Object.entries(planCounts).map(([code, count]) => ({
+    name: code.charAt(0) + code.slice(1).toLowerCase(),
+    value: Math.round((count / total) * 100),
+    color: PLAN_COLORS[code] ?? '#cbd5e1',
+  }))
+
+  // MRR del mes actual (real) + placeholder histórico con 0s para meses anteriores
+  const currentMonth = new Date().toLocaleString('es-ES', { month: 'short' })
+  const MRR_DATA = [
+    { month: currentMonth, mrr },
+  ]
 
   return (
     <div className="space-y-8">

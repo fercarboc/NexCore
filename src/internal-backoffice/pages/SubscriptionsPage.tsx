@@ -24,6 +24,10 @@ export const SubscriptionsPage = () => {
   const [selectedSub, setSelectedSub] = useState<any>(null);
   const { clients } = useClients();
 
+  const activeCount = clients.filter(c => c.subscription?.status === 'ACTIVE').length
+  const trialCount = clients.filter(c => c.subscription?.status === 'TRIAL').length
+  const pastDueCount = clients.filter(c => c.subscription?.status === 'PAST_DUE').length
+
   const handleManage = (client: any) => {
     setSelectedSub(client);
   };
@@ -47,7 +51,7 @@ export const SubscriptionsPage = () => {
           </div>
           <div>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Suscripciones Activas</p>
-            <p className="text-2xl font-black text-slate-900">142</p>
+            <p className="text-2xl font-black text-slate-900">{activeCount}</p>
           </div>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
@@ -56,7 +60,7 @@ export const SubscriptionsPage = () => {
           </div>
           <div>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">En Periodo de Prueba</p>
-            <p className="text-2xl font-black text-slate-900">14</p>
+            <p className="text-2xl font-black text-slate-900">{trialCount}</p>
           </div>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
@@ -65,7 +69,7 @@ export const SubscriptionsPage = () => {
           </div>
           <div>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Pagos Fallidos</p>
-            <p className="text-2xl font-black text-slate-900">3</p>
+            <p className="text-2xl font-black text-slate-900">{pastDueCount}</p>
           </div>
         </div>
       </div>
