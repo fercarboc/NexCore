@@ -7,8 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
@@ -211,6 +209,226 @@ export type Database = {
           },
         ]
       }
+      crm_contacts: {
+        Row: {
+          business: string | null
+          created_at: string | null
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          structure: string | null
+        }
+        Insert: {
+          business?: string | null
+          created_at?: string | null
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          structure?: string | null
+        }
+        Update: {
+          business?: string | null
+          created_at?: string | null
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          structure?: string | null
+        }
+        Relationships: []
+      }
+      crm_emails: {
+        Row: {
+          body: string | null
+          contact_id: string | null
+          created_at: string | null
+          direction: string
+          from_email: string | null
+          id: string
+          lead_id: string | null
+          provider: string | null
+          provider_id: string | null
+          status: string | null
+          subject: string | null
+          to_email: string | null
+        }
+        Insert: {
+          body?: string | null
+          contact_id?: string | null
+          created_at?: string | null
+          direction: string
+          from_email?: string | null
+          id?: string
+          lead_id?: string | null
+          provider?: string | null
+          provider_id?: string | null
+          status?: string | null
+          subject?: string | null
+          to_email?: string | null
+        }
+        Update: {
+          body?: string | null
+          contact_id?: string | null
+          created_at?: string | null
+          direction?: string
+          from_email?: string | null
+          id?: string
+          lead_id?: string | null
+          provider?: string | null
+          provider_id?: string | null
+          status?: string | null
+          subject?: string | null
+          to_email?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_emails_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "crm_contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_emails_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "crm_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_events: {
+        Row: {
+          contact_id: string | null
+          created_at: string | null
+          data: Json | null
+          id: string
+          type: string | null
+        }
+        Insert: {
+          contact_id?: string | null
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          type?: string | null
+        }
+        Update: {
+          contact_id?: string | null
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_events_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "crm_contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_leads: {
+        Row: {
+          accommodations: string | null
+          contact_id: string | null
+          created_at: string | null
+          id: string
+          message: string | null
+          plan: string | null
+          request_type: string
+          source: string
+          status: string | null
+        }
+        Insert: {
+          accommodations?: string | null
+          contact_id?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          plan?: string | null
+          request_type: string
+          source: string
+          status?: string | null
+        }
+        Update: {
+          accommodations?: string | null
+          contact_id?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          plan?: string | null
+          request_type?: string
+          source?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_leads_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "crm_contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      platform_integrations: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          environment: string
+          health: number
+          id: string
+          last_sync: string
+          latency: string
+          name: string
+          owner: string | null
+          provider: string
+          status: string
+          success_rate: string
+          uptime: string
+          version: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          environment?: string
+          health?: number
+          id: string
+          last_sync?: string
+          latency?: string
+          name: string
+          owner?: string | null
+          provider: string
+          status?: string
+          success_rate?: string
+          uptime?: string
+          version?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          environment?: string
+          health?: number
+          id?: string
+          last_sync?: string
+          latency?: string
+          name?: string
+          owner?: string | null
+          provider?: string
+          status?: string
+          success_rate?: string
+          uptime?: string
+          version?: string | null
+        }
+        Relationships: []
+      }
       provisioning_jobs: {
         Row: {
           action: string
@@ -266,6 +484,8 @@ export type Database = {
       }
       saas_clients: {
         Row: {
+          casarural_property_id: string | null
+          casarural_user_id: string | null
           contact_email: string
           contact_name: string
           contact_phone: string | null
@@ -279,6 +499,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          casarural_property_id?: string | null
+          casarural_user_id?: string | null
           contact_email: string
           contact_name: string
           contact_phone?: string | null
@@ -292,6 +514,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          casarural_property_id?: string | null
+          casarural_user_id?: string | null
           contact_email?: string
           contact_name?: string
           contact_phone?: string | null
@@ -385,6 +609,9 @@ export type Database = {
           multi_property_enabled: boolean
           name: string
           setup_fee_cents: number
+          stripe_price_id_monthly: string | null
+          stripe_price_id_yearly: string | null
+          stripe_product_id: string | null
           yearly_price_cents: number
         }
         Insert: {
@@ -405,6 +632,9 @@ export type Database = {
           multi_property_enabled?: boolean
           name: string
           setup_fee_cents?: number
+          stripe_price_id_monthly?: string | null
+          stripe_price_id_yearly?: string | null
+          stripe_product_id?: string | null
           yearly_price_cents: number
         }
         Update: {
@@ -425,6 +655,9 @@ export type Database = {
           multi_property_enabled?: boolean
           name?: string
           setup_fee_cents?: number
+          stripe_price_id_monthly?: string | null
+          stripe_price_id_yearly?: string | null
+          stripe_product_id?: string | null
           yearly_price_cents?: number
         }
         Relationships: []
@@ -482,7 +715,7 @@ export type Database = {
           {
             foreignKeyName: "saas_subscriptions_client_id_fkey"
             columns: ["client_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "saas_clients"
             referencedColumns: ["id"]
           },
@@ -648,13 +881,13 @@ export type Tables<
     : never
   : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
         DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
+  ? (DefaultSchema["Tables"] &
+      DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+      Row: infer R
+    }
+    ? R
     : never
+  : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
@@ -674,12 +907,12 @@ export type TablesInsert<
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+      Insert: infer I
+    }
+    ? I
     : never
+  : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
@@ -699,9 +932,32 @@ export type TablesUpdate<
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+      Update: infer U
+    }
+    ? U
     : never
+  : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+  ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+  : never
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const

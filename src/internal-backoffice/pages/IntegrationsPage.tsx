@@ -15,11 +15,12 @@ import {
   Puzzle
 } from 'lucide-react';
 import { SectionHeader, Badge, MetricCard } from '../components/UI';
-import { MOCK_INTEGRATIONS, MOCK_INTEGRATION_LOGS } from '../mock/integrations.mock';
+import { useIntegrations } from '@/src/hooks/useIntegrations';
 import type { InfraIntegration } from '../types/integrations';
 
 export const IntegrationsPage = () => {
   const [selectedIntegration, setSelectedIntegration] = useState<InfraIntegration | null>(null);
+  const { integrations } = useIntegrations()
 
   if (selectedIntegration) {
     return (
@@ -75,19 +76,12 @@ export const IntegrationsPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {MOCK_INTEGRATION_LOGS.map((log) => (
-                    <tr key={log.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
-                      <td className="py-4 px-6 text-[10px] font-mono text-slate-500">{log.timestamp}</td>
-                      <td className="py-4 px-6">
-                        <p className="text-xs font-bold text-slate-900">{log.type}</p>
-                        <p className="text-[10px] text-slate-500">{log.details}</p>
-                      </td>
-                      <td className="py-4 px-6">
-                        <Badge variant={log.result === 'success' ? 'emerald' : log.result === 'error' ? 'rose' : 'amber'}>{log.result}</Badge>
-                      </td>
-                      <td className="py-4 px-6 text-[10px] font-mono text-slate-600">{log.code}</td>
-                    </tr>
-                  ))}
+                  <tr>
+                    <td colSpan={4} className="py-12 text-center text-xs text-slate-400 font-medium">
+                      <History className="w-7 h-7 mx-auto mb-2 opacity-20" />
+                      Logs en tiempo real disponibles próximamente
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -139,7 +133,7 @@ export const IntegrationsPage = () => {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {MOCK_INTEGRATIONS.map((integration) => (
+        {integrations.map((integration) => (
           <div 
             key={integration.id} 
             onClick={() => setSelectedIntegration(integration)}

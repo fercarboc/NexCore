@@ -1,6 +1,9 @@
+import { useState } from 'react';
+import { AnimatePresence } from 'motion/react';
 import { Search, Filter, Download, Plus, MoreVertical, ChevronRight, ArrowUpRight } from 'lucide-react';
 import { SectionHeader, Badge } from '../components/UI';
-import { MOCK_CLIENTS_WITH_DETAILS } from '../mock/clients.mock';
+import { useClients } from '@/src/hooks/useClients';
+import { NewClientWizard } from '../components/NewClientWizard';
 import type { SaaSClientWithDetails } from '../types/clients';
 
 interface ClientsPageProps {
@@ -24,6 +27,19 @@ const planVariant = (code?: string) => {
 }
 
 export const ClientsPage = ({ onSelectClient }: ClientsPageProps) => {
+  const { clients, loading, error, refetch } = useClients()
+  const [showWizard, setShowWizard] = useState(false)
+
+  if (loading) return (
+    <div className="flex items-center justify-center h-64">
+      <div className="w-8 h-8 border-2 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin" />
+    </div>
+  )
+
+  if (error) return (
+    <div className="flex items-center justify-center h-64 text-rose-500 text-sm font-bold">{error}</div>
+  )
+
   return (
     <div className="space-y-8">
       <SectionHeader
@@ -34,7 +50,10 @@ export const ClientsPage = ({ onSelectClient }: ClientsPageProps) => {
             <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2">
               <Download className="w-3 h-3" /> Exportar CSV
             </button>
-            <button className="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-900/10">
+            <button
+              onClick={() => setShowWizard(true)}
+              className="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-900/10"
+            >
               <Plus className="w-3 h-3" /> Nuevo Cliente
             </button>
           </>
@@ -57,7 +76,7 @@ export const ClientsPage = ({ onSelectClient }: ClientsPageProps) => {
             </button>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mostrando {MOCK_CLIENTS_WITH_DETAILS.length} clientes</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mostrando {clients.length} clientes</span>
             <div className="flex items-center gap-1">
               <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-white disabled:opacity-50" disabled>
                 <ChevronRight className="w-4 h-4 rotate-180" />
@@ -83,7 +102,7 @@ export const ClientsPage = ({ onSelectClient }: ClientsPageProps) => {
               </tr>
             </thead>
             <tbody>
-              {MOCK_CLIENTS_WITH_DETAILS.map((client) => {
+              {clients.map((client) => {
                 const planCode = client.subscription?.plan?.code
                 const planName = client.subscription?.plan?.name ?? '—'
                 const sc = statusConfig[client.status] ?? { dot: 'bg-slate-400', label: client.status }
@@ -141,6 +160,15 @@ export const ClientsPage = ({ onSelectClient }: ClientsPageProps) => {
           </table>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showWizard && (
+          <NewClientWizard
+            onClose={() => setShowWizard(false)}
+            onSuccess={refetch}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

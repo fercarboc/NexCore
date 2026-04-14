@@ -12,11 +12,24 @@ import {
   Paperclip,
 } from 'lucide-react';
 import { SectionHeader, Badge } from '../components/UI';
-import { MOCK_TICKETS, MOCK_TIMELINE } from '../mock/support.mock';
+import { useSupport } from '@/src/hooks/useSupport';
+import { useTicketEvents } from '@/src/hooks/useTicketEvents';
 import type { TicketWithDetails } from '../types/support';
 
 export const SupportPage = () => {
   const [selectedTicket, setSelectedTicket] = useState<TicketWithDetails | null>(null);
+  const { tickets, loading, error } = useSupport()
+  const { events } = useTicketEvents(selectedTicket?.id ?? null)
+
+  if (loading) return (
+    <div className="flex items-center justify-center h-64">
+      <div className="w-8 h-8 border-2 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin" />
+    </div>
+  )
+
+  if (error) return (
+    <div className="flex items-center justify-center h-64 text-rose-500 text-sm font-bold">{error}</div>
+  )
 
   if (selectedTicket) {
     return (
@@ -65,7 +78,7 @@ export const SupportPage = () => {
               </div>
 
               <div className="flex-1 overflow-y-auto p-8 space-y-8">
-                {MOCK_TIMELINE.map((event) => (
+                {events.map((event) => (
                   <div key={event.id} className={`flex gap-4 ${event.type === 'note' ? 'bg-amber-50/50 p-4 rounded-2xl border border-amber-100' : ''}`}>
                     <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
                       <User className="w-5 h-5 text-slate-400" />
@@ -236,7 +249,7 @@ export const SupportPage = () => {
               </tr>
             </thead>
             <tbody>
-              {MOCK_TICKETS.map((ticket) => (
+              {tickets.map((ticket) => (
                 <tr key={ticket.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors cursor-pointer" onClick={() => setSelectedTicket(ticket)}>
                   <td className="py-4 px-6">
                     <div className="space-y-1">

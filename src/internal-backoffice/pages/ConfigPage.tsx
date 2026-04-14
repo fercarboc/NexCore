@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   Building2, 
   Palette, 
@@ -16,10 +16,11 @@ import {
   Zap
 } from 'lucide-react';
 import { SectionHeader, Badge } from '../components/UI';
-import { MOCK_INTERNAL_USERS, MOCK_LEGAL_DOCS } from '../mock/common.mock';
+import { useStaff } from '@/src/hooks/useStaff';
 
 export const ConfigPage = () => {
   const [configTab, setConfigTab] = useState('empresa');
+  const { staff } = useStaff()
 
   const tabs = [
     { id: 'empresa', label: 'Empresa', icon: Building2 },
@@ -146,29 +147,9 @@ export const ConfigPage = () => {
                     <Plus className="w-3 h-3" /> Nuevo Documento
                   </button>
                 </div>
-                <div className="space-y-3">
-                  {MOCK_LEGAL_DOCS.map((doc) => (
-                    <div key={doc.id} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between group hover:border-indigo-200 transition-all">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-400 group-hover:text-indigo-600 transition-colors">
-                          <FileText className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="text-sm font-bold text-slate-900">{doc.name}</h4>
-                            <span className="text-[10px] font-mono text-slate-400">{doc.version}</span>
-                          </div>
-                          <p className="text-[10px] text-slate-500 mt-0.5">Actualizado el {doc.updatedAt} por {doc.responsible}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <Badge variant={doc.status === 'published' ? 'emerald' : 'amber'}>{doc.status}</Badge>
-                        <button className="p-2 text-slate-400 hover:text-indigo-600 transition-colors">
-                          <Settings className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                <div className="flex flex-col items-center justify-center py-12 text-slate-400 text-xs font-medium">
+                  <FileText className="w-8 h-8 mb-3 opacity-20" />
+                  Gestión de documentos legales disponible próximamente
                 </div>
               </div>
             )}
@@ -196,12 +177,12 @@ export const ConfigPage = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {MOCK_INTERNAL_USERS.map((user) => (
+                      {staff.map((user) => (
                         <tr key={user.id} className="border-b border-slate-50 last:border-0">
                           <td className="py-4 px-2">
                             <div className="flex items-center gap-3">
                               <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500">
-                                {user.name.split(' ').map(n => n[0]).join('')}
+                                {user.name.split(' ').map((n: string) => n[0]).join('')}
                               </div>
                               <div>
                                 <p className="text-sm font-bold text-slate-900">{user.name}</p>
@@ -215,7 +196,11 @@ export const ConfigPage = () => {
                           <td className="py-4 px-2">
                             <Badge variant={user.status === 'active' ? 'emerald' : 'slate'}>{user.status}</Badge>
                           </td>
-                          <td className="py-4 px-2 text-xs text-slate-400">{user.lastAccess}</td>
+                          <td className="py-4 px-2 text-xs text-slate-400">
+                            {user.last_sign_in_at
+                              ? new Date(user.last_sign_in_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
+                              : '—'}
+                          </td>
                           <td className="py-4 px-2 text-right">
                             <button className="p-2 text-slate-400 hover:text-indigo-600">
                               <Settings className="w-4 h-4" />

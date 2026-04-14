@@ -26,9 +26,8 @@ import {
 } from 'lucide-react';
 import { Badge } from '../components/UI';
 import type { SaaSClientWithDetails } from '../types/clients';
-import { MOCK_CLIENT_ACTIVITY, MOCK_CLIENT_CONTACTS, MOCK_CLIENT_NOTES } from '../mock/clients.mock';
-import { MOCK_INVOICES } from '../mock/billing.mock';
-import { MOCK_TICKETS } from '../mock/support.mock';
+import { useBilling } from '@/src/hooks/useBilling';
+import { useSupport } from '@/src/hooks/useSupport';
 
 interface ClientDetailPageProps {
   client: SaaSClientWithDetails;
@@ -47,6 +46,8 @@ const activityIconMap: Record<string, typeof Shield> = {
 
 export const ClientDetailPage = ({ client, onBack }: ClientDetailPageProps) => {
   const [activeTab, setActiveTab] = useState('overview');
+  const { invoices } = useBilling(client.id)
+  const { tickets } = useSupport(client.id)
 
   const displayName = clientDisplayName(client)
   const initials = displayName.split(' ').map(n => n[0]).join('').slice(0, 2)
@@ -230,21 +231,9 @@ export const ClientDetailPage = ({ client, onBack }: ClientDetailPageProps) => {
                   </h3>
                   <button className="text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">Ver log completo</button>
                 </div>
-                <div className="p-6 space-y-6">
-                  {MOCK_CLIENT_ACTIVITY.map((act) => {
-                    const Icon = activityIconMap[act.type] ?? History
-                    return (
-                      <div key={act.id} className="flex gap-4">
-                        <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0">
-                          <Icon className="w-4 h-4 text-slate-400" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-slate-700">{act.description}</p>
-                          <p className="text-[10px] text-slate-400 mt-0.5">{act.timestamp}</p>
-                        </div>
-                      </div>
-                    )
-                  })}
+                <div className="p-6 flex flex-col items-center justify-center py-10 text-slate-400 text-xs font-medium">
+                  <History className="w-8 h-8 mb-3 opacity-20" />
+                  Registro de actividad disponible próximamente
                 </div>
               </div>
             </div>
@@ -258,25 +247,25 @@ export const ClientDetailPage = ({ client, onBack }: ClientDetailPageProps) => {
                   </h3>
                 </div>
                 <div className="p-6 space-y-6">
-                  {MOCK_CLIENT_CONTACTS.map((contact) => (
-                    <div key={contact.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-3">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="text-sm font-bold text-slate-900">{contact.name}</p>
-                          <p className="text-[10px] font-medium text-slate-500">{contact.role}</p>
-                        </div>
-                        {contact.primary && <Badge variant="indigo">Principal</Badge>}
+                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-sm font-bold text-slate-900">{client.contact_name}</p>
+                        <p className="text-[10px] font-medium text-slate-500">Contacto principal</p>
                       </div>
-                      <div className="space-y-1.5">
-                        <div className="flex items-center gap-2 text-xs text-slate-600">
-                          <Mail className="w-3 h-3" /> {contact.email}
-                        </div>
-                        <div className="flex items-center gap-2 text-xs text-slate-600">
-                          <Phone className="w-3 h-3" /> {contact.phone}
-                        </div>
-                      </div>
+                      <Badge variant="indigo">Principal</Badge>
                     </div>
-                  ))}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2 text-xs text-slate-600">
+                        <Mail className="w-3 h-3" /> {client.contact_email}
+                      </div>
+                      {client.contact_phone && (
+                        <div className="flex items-center gap-2 text-xs text-slate-600">
+                          <Phone className="w-3 h-3" /> {client.contact_phone}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   <button className="w-full py-3 border-2 border-dashed border-slate-200 rounded-2xl text-xs font-bold text-slate-400 hover:border-indigo-300 hover:text-indigo-600 transition-all flex items-center justify-center gap-2">
                     <Plus className="w-4 h-4" /> Añadir Contacto
                   </button>
@@ -291,15 +280,7 @@ export const ClientDetailPage = ({ client, onBack }: ClientDetailPageProps) => {
                   </h3>
                 </div>
                 <div className="p-6 space-y-4">
-                  {MOCK_CLIENT_NOTES.map((note) => (
-                    <div key={note.id} className="space-y-2">
-                      <div className="flex justify-between text-[10px] font-bold">
-                        <span className="text-indigo-600">{note.author}</span>
-                        <span className="text-slate-400">{note.timestamp}</span>
-                      </div>
-                      <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">{note.content}</p>
-                    </div>
-                  ))}
+                  <p className="text-xs text-slate-400 italic text-center py-2">No hay notas internas aún.</p>
                   <div className="pt-4">
                     <textarea
                       placeholder="Escribe una nota interna..."
@@ -472,7 +453,7 @@ export const ClientDetailPage = ({ client, onBack }: ClientDetailPageProps) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {MOCK_INVOICES.filter(inv => inv.client_id === client.id).map((inv) => (
+                    {invoices.map((inv) => (
                       <tr key={inv.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
                         <td className="py-4 px-8">
                           <div className="flex items-center gap-3">
@@ -526,7 +507,7 @@ export const ClientDetailPage = ({ client, onBack }: ClientDetailPageProps) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {MOCK_TICKETS.filter(t => t.client_id === client.id).map((ticket) => (
+                    {tickets.map((ticket) => (
                       <tr key={ticket.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
                         <td className="py-4 px-8">
                           <div className="space-y-1">

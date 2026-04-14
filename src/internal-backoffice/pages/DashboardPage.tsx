@@ -20,9 +20,19 @@ import {
 } from 'recharts';
 import { MetricCard, SectionHeader, Badge } from '../components/UI';
 import { MRR_DATA, PLAN_DISTRIBUTION } from '../mock/metrics.mock';
-import { MOCK_CLIENTS_WITH_DETAILS } from '../mock/clients.mock';
+import { useClients } from '@/src/hooks/useClients';
 
 export const DashboardPage = () => {
+  const { clients } = useClients()
+
+  const activeClients = clients.filter(c => c.status === 'ACTIVE')
+  const mrr = activeClients.reduce((sum, c) => {
+    const price = c.subscription?.plan?.monthly_price_cents ?? 0
+    const cycle = c.subscription?.billing_cycle
+    return sum + (cycle === 'YEARLY' ? Math.round(price / 12) : price)
+  }, 0)
+  const mrrDisplay = mrr > 0 ? `${(mrr / 100).toLocaleString('es-ES', { maximumFractionDigits: 0 })}€` : '—'
+
   return (
     <div className="space-y-8">
       <SectionHeader 
@@ -36,8 +46,8 @@ export const DashboardPage = () => {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <MetricCard title="MRR Total" value="24.800€" trend="up" trendValue="+12.5%" icon={TrendingUp} />
-        <MetricCard title="Clientes Activos" value="156" trend="up" trendValue="+8" icon={Users} />
+        <MetricCard title="MRR Total" value={mrrDisplay} trend="up" trendValue="+12.5%" icon={TrendingUp} />
+        <MetricCard title="Clientes Activos" value={String(activeClients.length)} trend="up" trendValue="+8" icon={Users} />
         <MetricCard title="Churn Rate" value="1.2%" trend="down" trendValue="-0.4%" icon={Activity} />
         <MetricCard title="LTV Promedio" value="842€" trend="up" trendValue="+5.2%" icon={CreditCard} />
       </div>
@@ -128,7 +138,7 @@ export const DashboardPage = () => {
               </tr>
             </thead>
             <tbody>
-              {MOCK_CLIENTS_WITH_DETAILS.slice(0, 5).map((client) => {
+              {clients.slice(0, 5).map((client) => {
                 const displayName = client.trade_name || client.legal_name
                 const initials = displayName.split(' ').map(n => n[0]).join('').slice(0, 2)
                 const planCode = client.subscription?.plan?.code

@@ -34,7 +34,7 @@ export const Sidebar = ({ activeSection, setActiveSection, onLogout }: SidebarPr
     { id: 'api', label: 'API / Webhooks', icon: Terminal },
     { id: 'metricas', label: 'Métricas', icon: Activity },
     { id: 'soporte', label: 'Soporte', icon: LifeBuoy },
-    { id: 'inbox', label: 'Bandeja Entrada', icon: Bell },
+    { id: 'inbox', label: 'CRM', icon: Bell },
     { id: 'configuracion', label: 'Configuración', icon: Settings },
   ];
 

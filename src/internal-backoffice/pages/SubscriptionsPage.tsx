@@ -17,11 +17,12 @@ import {
   History
 } from 'lucide-react';
 import { SectionHeader, Badge } from '../components/UI';
-import { MOCK_CLIENTS_WITH_DETAILS } from '../mock/clients.mock';
+import { useClients } from '@/src/hooks/useClients';
 import { motion, AnimatePresence } from 'motion/react';
 
 export const SubscriptionsPage = () => {
   const [selectedSub, setSelectedSub] = useState<any>(null);
+  const { clients } = useClients();
 
   const handleManage = (client: any) => {
     setSelectedSub(client);
@@ -99,7 +100,7 @@ export const SubscriptionsPage = () => {
               </tr>
             </thead>
             <tbody>
-              {MOCK_CLIENTS_WITH_DETAILS.map((client) => {
+              {clients.map((client) => {
                 const displayName = client.trade_name || client.legal_name
                 const initials = displayName.split(' ').map((n: string) => n[0]).join('').slice(0, 2)
                 const planCode = client.subscription?.plan?.code

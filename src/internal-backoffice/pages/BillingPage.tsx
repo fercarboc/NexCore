@@ -9,9 +9,21 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { SectionHeader, Badge, MetricCard } from '../components/UI';
-import { MOCK_INVOICES } from '../mock/billing.mock';
+import { useBilling } from '@/src/hooks/useBilling';
 
 export const BillingPage = () => {
+  const { invoices, loading, error } = useBilling()
+
+  if (loading) return (
+    <div className="flex items-center justify-center h-64">
+      <div className="w-8 h-8 border-2 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin" />
+    </div>
+  )
+
+  if (error) return (
+    <div className="flex items-center justify-center h-64 text-rose-500 text-sm font-bold">{error}</div>
+  )
+
   return (
     <div className="space-y-8">
       <SectionHeader 
@@ -63,7 +75,7 @@ export const BillingPage = () => {
               </tr>
             </thead>
             <tbody>
-              {MOCK_INVOICES.map((inv) => (
+              {invoices.map((inv) => (
                 <tr key={inv.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-3">

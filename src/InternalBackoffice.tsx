@@ -11,7 +11,8 @@ import { BillingPage } from './internal-backoffice/pages/BillingPage';
 import { IntegrationsPage } from './internal-backoffice/pages/IntegrationsPage';
 import { SupportPage } from './internal-backoffice/pages/SupportPage';
 import { ConfigPage } from './internal-backoffice/pages/ConfigPage';
-import { ApiPage, MetricsPage, InboxPage } from './internal-backoffice/pages/OtherPages';
+import { ApiPage, MetricsPage } from './internal-backoffice/pages/OtherPages';
+import { CRMPage } from './internal-backoffice/pages/CRMPage';
 import { InternalSection } from './internal-backoffice/types/common';
 import type { SaaSClientWithDetails } from './internal-backoffice/types/clients';
 import { supabase } from './lib/supabase';
@@ -71,7 +72,7 @@ const InternalBackoffice = ({ onLogout }: InternalBackofficeProps) => {
       case 'soporte':
         return <SupportPage />;
       case 'inbox':
-        return <InboxPage />;
+        return <CRMPage />;
       case 'configuracion':
         return <ConfigPage />;
       default:
