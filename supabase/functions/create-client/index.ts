@@ -119,11 +119,12 @@ serve(async (req) => {
     const casaruralAdmin = createClient(casaruralUrl, casaruralServiceKey)
 
     const casaruralAppUrl = Deno.env.get('CASARURAL_APP_URL') ?? `https://clientes.staynexapp.com`
+    const inviteRedirectUrl = `${casaruralAppUrl}/auth/acepta-invitacion`
 
     const { data: inviteData, error: inviteError } = await casaruralAdmin.auth.admin.inviteUserByEmail(
       contact_email,
       {
-        redirectTo: casaruralAppUrl,
+        redirectTo: inviteRedirectUrl,
         data: {
           full_name: contact_name,
           nexcore_client: true,
