@@ -63,6 +63,8 @@ export interface SendEmailPayload {
   to_email: string
   subject: string
   body: string
+  /** true cuando body ya es HTML (p.ej. una plantilla). false para texto plano. */
+  is_html?: boolean
 }
 
 export const sendCrmEmail = async (payload: SendEmailPayload): Promise<{ success: boolean; status: string }> => {
@@ -71,4 +73,52 @@ export const sendCrmEmail = async (payload: SendEmailPayload): Promise<{ success
   })
   if (error) throw new Error(error.message)
   return data!
+}
+
+// ─── Email Templates ──────────────────────────────────────────────────────────
+
+export type TemplateCategory = 'marketing' | 'dossier' | 'info' | 'followup'
+
+export interface CrmEmailTemplate {
+  id: string
+  name: string
+  description: string | null
+  category: TemplateCategory
+  subject: string
+  body: string
+  thumbnail_url: string | null
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface SaveTemplatePayload {
+  id?: string
+  name: string
+  description?: string | null
+  category: TemplateCategory
+  subject: string
+  body: string
+  thumbnail_url?: string | null
+}
+
+export const getCrmTemplates = async (): Promise<CrmEmailTemplate[]> => {
+  const { data, error } = await supabase.functions.invoke<CrmEmailTemplate[]>('get-crm-templates')
+  if (error) throw new Error(error.message)
+  return data ?? []
+}
+
+export const saveCrmTemplate = async (payload: SaveTemplatePayload): Promise<CrmEmailTemplate> => {
+  const { data, error } = await supabase.functions.invoke<{ success: boolean; template: CrmEmailTemplate }>('save-crm-template', {
+    body: payload,
+  })
+  if (error) throw new Error(error.message)
+  return data!.template
+}
+
+export const deleteCrmTemplate = async (id: string): Promise<void> => {
+  const { error } = await supabase.functions.invoke('delete-crm-template', {
+    body: { id },
+  })
+  if (error) throw new Error(error.message)
 }

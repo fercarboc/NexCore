@@ -32,11 +32,15 @@ serve(async (req) => {
     return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: corsHeaders })
   }
 
-  const { contact_id, lead_id, to_email, subject, body } = await req.json()
+  const { contact_id, lead_id, to_email, subject, body, is_html } = await req.json()
 
   if (!contact_id || !to_email || !subject || !body) {
     return new Response(JSON.stringify({ error: 'contact_id, to_email, subject and body are required' }), { status: 400, headers: corsHeaders })
   }
+
+  // If is_html=true the body already contains proper HTML (e.g. from a template).
+  // Otherwise treat it as plain text and convert newlines to <br>.
+  const htmlBody: string = is_html ? body : body.replace(/\n/g, '<br>')
 
   const FROM_EMAIL = 'contacto@staynexapp.com'
   const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
@@ -59,7 +63,7 @@ serve(async (req) => {
         from: `StayNexApp <${FROM_EMAIL}>`,
         to: [to_email],
         subject,
-        html: body.replace(/\n/g, '<br>'),
+        html: htmlBody,
       }),
     })
 
@@ -83,7 +87,7 @@ serve(async (req) => {
       lead_id: lead_id ?? null,
       direction: 'outbound',
       subject,
-      body: body.replace(/\n/g, '<br>'),
+      body: htmlBody,
       from_email: FROM_EMAIL,
       to_email,
       status: emailStatus,
