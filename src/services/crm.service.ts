@@ -103,9 +103,13 @@ export interface SaveTemplatePayload {
 }
 
 export const getCrmTemplates = async (): Promise<CrmEmailTemplate[]> => {
-  const { data, error } = await supabase.functions.invoke<CrmEmailTemplate[]>('get-crm-templates')
+  const { data, error } = await supabase
+    .from('crm_email_templates')
+    .select('id, name, description, category, subject, body, thumbnail_url, is_active, created_at, updated_at')
+    .eq('is_active', true)
+    .order('created_at', { ascending: true })
   if (error) throw new Error(error.message)
-  return data ?? []
+  return (data ?? []) as CrmEmailTemplate[]
 }
 
 export const saveCrmTemplate = async (payload: SaveTemplatePayload): Promise<CrmEmailTemplate> => {
