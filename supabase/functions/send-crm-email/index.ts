@@ -34,8 +34,8 @@ serve(async (req) => {
 
   const { contact_id, lead_id, to_email, subject, body, is_html } = await req.json()
 
-  if (!contact_id || !to_email || !subject || !body) {
-    return new Response(JSON.stringify({ error: 'contact_id, to_email, subject and body are required' }), { status: 400, headers: corsHeaders })
+  if (!to_email || !subject || !body) {
+    return new Response(JSON.stringify({ error: 'to_email, subject and body are required' }), { status: 400, headers: corsHeaders })
   }
 
   // If is_html=true the body already contains proper HTML (e.g. from a template).

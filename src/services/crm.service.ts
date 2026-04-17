@@ -58,7 +58,7 @@ export const getCrmContact = async (contact_id: string): Promise<CrmContactDetai
 }
 
 export interface SendEmailPayload {
-  contact_id: string
+  contact_id?: string | null
   lead_id?: string | null
   to_email: string
   subject: string

@@ -523,6 +523,139 @@ const TemplateModal = ({
   )
 }
 
+// ─── Send template modal ─────────────────────────────────────────────────────
+
+const SendTemplateModal = ({
+  template,
+  onClose,
+}: {
+  template: CrmEmailTemplate
+  onClose: () => void
+}) => {
+  const [toName, setToName] = useState('')
+  const [toEmail, setToEmail] = useState('')
+  const [subject, setSubject] = useState(template.subject)
+  const [sending, setSending] = useState(false)
+  const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null)
+
+  const resolvedBody = template.body.replace(/\{\{nombre\}\}/g, toName || 'Cliente')
+
+  const handleSend = async () => {
+    if (!toEmail.trim() || !subject.trim()) return
+    setSending(true)
+    setResult(null)
+    try {
+      const res = await sendCrmEmail({
+        to_email: toEmail.trim(),
+        subject: subject.trim(),
+        body: resolvedBody,
+        is_html: true,
+      })
+      if (res.status === 'sent') {
+        setResult({ ok: true, msg: 'Email enviado correctamente.' })
+      } else {
+        setResult({ ok: false, msg: 'El email se registró pero falló el envío.' })
+      }
+    } catch (e: unknown) {
+      setResult({ ok: false, msg: e instanceof Error ? e.message : 'Error desconocido' })
+    } finally {
+      setSending(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+          <div>
+            <h2 className="text-sm font-black text-slate-900">Enviar plantilla</h2>
+            <p className="text-[10px] text-slate-400 mt-0.5 truncate max-w-xs">{template.name}</p>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="p-6 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nombre destinatario</label>
+              <input
+                type="text"
+                value={toName}
+                onChange={e => setToName(e.target.value)}
+                placeholder="Ej: María García"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-600/10"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Email destinatario *</label>
+              <input
+                type="email"
+                value={toEmail}
+                onChange={e => setToEmail(e.target.value)}
+                placeholder="correo@empresa.com"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-600/10"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Asunto *</label>
+            <input
+              type="text"
+              value={subject}
+              onChange={e => setSubject(e.target.value)}
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-600/10"
+            />
+          </div>
+
+          {/* Preview */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+              Vista previa
+              {toName && <span className="ml-1 normal-case font-normal text-indigo-500">(con nombre aplicado)</span>}
+            </label>
+            <div
+              className="rounded-xl border border-slate-100 max-h-48 overflow-y-auto p-3 text-xs pointer-events-none"
+              dangerouslySetInnerHTML={{ __html: resolvedBody }}
+            />
+          </div>
+
+          {result && (
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold ${result.ok ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'}`}>
+              {result.ok ? <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" /> : <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />}
+              {result.msg}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="border-t border-slate-100 px-6 py-4 flex items-center justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+          >
+            {result?.ok ? 'Cerrar' : 'Cancelar'}
+          </button>
+          {!result?.ok && (
+            <button
+              onClick={handleSend}
+              disabled={sending || !toEmail.trim() || !subject.trim()}
+              className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {sending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
+              {sending ? 'Enviando…' : 'Enviar email'}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Template manager view ───────────────────────────────────────────────────
 
 const TemplateManager = ({
@@ -537,6 +670,7 @@ const TemplateManager = ({
   const [editing, setEditing] = useState<CrmEmailTemplate | null | 'new'>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [previewId, setPreviewId] = useState<string | null>(null)
+  const [sending, setSending] = useState<CrmEmailTemplate | null>(null)
 
   const handleDelete = async (id: string) => {
     setDeletingId(id)
@@ -612,6 +746,13 @@ const TemplateManager = ({
                 </button>
                 <div className="flex-1" />
                 <button
+                  onClick={() => setSending(t)}
+                  className="flex items-center gap-1 px-2.5 py-1.5 bg-indigo-600 text-white rounded-lg text-[10px] font-bold hover:bg-indigo-700 transition-colors shadow-sm shadow-indigo-600/20"
+                >
+                  <Send className="w-3 h-3" />
+                  Enviar
+                </button>
+                <button
                   onClick={() => setEditing(t)}
                   className="flex items-center gap-1 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 hover:bg-slate-100 transition-colors"
                 >
@@ -643,12 +784,20 @@ const TemplateManager = ({
         </div>
       )}
 
-      {/* Modal */}
+      {/* Edit/Create modal */}
       {editing !== null && (
         <TemplateModal
           initial={editing === 'new' ? null : editing}
           onClose={() => setEditing(null)}
           onSaved={onRefetch}
+        />
+      )}
+
+      {/* Send modal */}
+      {sending !== null && (
+        <SendTemplateModal
+          template={sending}
+          onClose={() => setSending(null)}
         />
       )}
     </div>
