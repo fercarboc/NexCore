@@ -10,18 +10,25 @@ serve(async (req) => {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders })
   }
 
-  const supabase = createClient(
-    Deno.env.get('SUPABASE_URL')!,
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
-    { global: { headers: { Authorization: authHeader } } }
-  )
+  const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
+  const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  // Client with user token — for auth verification only
+  const userClient = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+    global: { headers: { Authorization: authHeader } },
+  })
+
+  // Admin client — for DB writes, bypasses JWT RS256/HS256 mismatch
+  const adminClient = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+    auth: { persistSession: false },
+  })
+
+  const { data: { user }, error: authError } = await userClient.auth.getUser()
   if (authError || !user) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders })
   }
 
-  const { data: staffProfile, error: staffError } = await supabase
+  const { data: staffProfile, error: staffError } = await adminClient
     .from('staff_profiles')
     .select('id, role, status')
     .eq('id', user.id)
