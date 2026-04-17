@@ -10,18 +10,25 @@ serve(async (req) => {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders })
   }
 
-  const supabase = createClient(
-    Deno.env.get('SUPABASE_URL')!,
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
-    { global: { headers: { Authorization: authHeader } } }
-  )
+  const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
+  const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
+  const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: { headers: { Authorization: authHeader } },
+    auth: { persistSession: false },
+  })
+
+  const adminClient = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+    auth: { persistSession: false },
+  })
+
+  const { data: { user }, error: authError } = await userClient.auth.getUser()
   if (authError || !user) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders })
   }
 
-  const { data: staffProfile, error: staffError } = await supabase
+  const { data: staffProfile, error: staffError } = await adminClient
     .from('staff_profiles')
     .select('id, role, status')
     .eq('id', user.id)
@@ -62,7 +69,7 @@ serve(async (req) => {
   let result
   if (id) {
     // Update existing
-    const { data, error } = await supabase
+    const { data, error } = await adminClient
       .from('crm_email_templates')
       .update(payload)
       .eq('id', id)
@@ -74,7 +81,7 @@ serve(async (req) => {
     result = data
   } else {
     // Create new
-    const { data, error } = await supabase
+    const { data, error } = await adminClient
       .from('crm_email_templates')
       .insert(payload)
       .select()
