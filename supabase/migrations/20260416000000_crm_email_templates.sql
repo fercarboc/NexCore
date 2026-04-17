@@ -71,7 +71,7 @@ INSERT INTO crm_email_templates (name, description, category, subject, body, thu
 
     <!-- Header con imagen de producto -->
     <div style="background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);padding:0;border-radius:16px 16px 0 0;overflow:hidden;">
-      <img src="https://nexcom.staynexapp.com/images/og-image.png"
+      <img src="https://nexcore.staynexapp.com/images/og-image.png"
            alt="StayNexApp" style="width:100%;display:block;" />
     </div>
 
@@ -148,14 +148,14 @@ INSERT INTO crm_email_templates (name, description, category, subject, body, thu
     <div style="background:#f8fafc;padding:24px 36px;border-radius:0 0 16px 16px;text-align:center;">
       <p style="margin:0 0 6px;font-size:12px;font-weight:700;color:#4f46e5;">StayNexApp</p>
       <p style="margin:0;font-size:11px;color:#94a3b8;">
-        ¿Preguntas? Responde a este email o escríbenos a <a href="mailto:hola@staynexapp.com" style="color:#4f46e5;">hola@staynexapp.com</a>
+        ¿Preguntas? Responde a este email o escríbenos a <a href="mailto:contacto@staynexapp.com" style="color:#4f46e5;">contacto@staynexapp.com</a>
       </p>
     </div>
 
   </div>
 </body>
 </html>',
-  'https://nexcom.staynexapp.com/images/og-image.png'
+  'https://nexcore.staynexapp.com/images/og-image.png'
 ),
 
 -- 2. Invitación a demo
@@ -212,7 +212,7 @@ INSERT INTO crm_email_templates (name, description, category, subject, body, thu
     <!-- Footer -->
     <div style="background:#f8fafc;padding:24px 36px;border-radius:0 0 16px 16px;text-align:center;">
       <p style="margin:0;font-size:11px;color:#94a3b8;">
-        StayNexApp · <a href="mailto:hola@staynexapp.com" style="color:#4f46e5;">hola@staynexapp.com</a>
+        StayNexApp · <a href="mailto:contacto@staynexapp.com" style="color:#4f46e5;">contacto@staynexapp.com</a>
       </p>
     </div>
   </div>
@@ -252,7 +252,7 @@ INSERT INTO crm_email_templates (name, description, category, subject, body, thu
       <div style="background:#f8fafc;border-left:4px solid #4f46e5;padding:16px 20px;border-radius:0 8px 8px 0;">
         <p style="margin:0;font-size:13px;color:#374151;line-height:1.6;">
           Responde directamente a este email o escríbenos a
-          <a href="mailto:hola@staynexapp.com" style="color:#4f46e5;font-weight:600;">hola@staynexapp.com</a>.
+          <a href="mailto:contacto@staynexapp.com" style="color:#4f46e5;font-weight:600;">contacto@staynexapp.com</a>.
           Respondemos en menos de 24 h.
         </p>
       </div>
