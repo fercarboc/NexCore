@@ -86,8 +86,8 @@ serve(async (req) => {
     console.error('Resend fetch error:', e)
   }
 
-  // Record in DB regardless of send status
-  const { data: emailRecord, error: dbError } = await supabase
+  // Record in DB using admin client (avoids PostgREST JWT algorithm mismatch)
+  const { data: emailRecord, error: dbError } = await adminClient
     .from('crm_emails')
     .insert({
       contact_id,
